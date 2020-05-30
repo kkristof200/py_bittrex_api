@@ -1,24 +1,34 @@
-from typing import Optional, Dict, List
+# --------------------------------------------------------------- Imports --------------------------------------------------------------- #
 
-from .utils.RequestManager import RequestManager
+# System
+from typing import Optional, Dict, List, Union
 
-class BittrexV1:
-    # set obj to True if want to use objects instead of jsons
-    def __init__(
-        self,
-        api_key: str = '',
-        secret_key: str = '',
-        max_request_try_count: int = 3,
-        sleep_time: float = 7.5,
-        obj: bool = False,
-        debug_level: int = 1
-    ):
-        self.requestUtils = RequestManager('https://api.bittrex.com/api/v1.1/', max_request_try_count = max_request_try_count, sleep_time = sleep_time, debug_level = debug_level)
-        self.api_key = api_key
-        self.secret_key = secret_key
-        self.obj = obj
+# Local
+from .__bittrex_core import BittrexCore
+from .utils.bittrex_requests import BittrexRequests, RequestMethod, JSONData
+from .models.v1.EndPoints import EndPoints
+from .models.v1.keys import Keys
+from .models.v1 import order_book_type
+from .utils.urls import Urls
+from .utils import crypto
 
-    ############################################################ PUBLIC ############################################################
+# --------------------------------------------------------------------------------------------------------------------------------------- #
+
+
+OrderBookType = order_book_type.OrderBookType
+
+
+# ----------------------------------------------------------- class: BittrexV1 ---------------------------------------------------------- #
+
+class BittrexV1(BittrexCore):
+
+    # ------------------------------------------------------ Private properties ------------------------------------------------------ #
+
+    _base_url = 'https://api.bittrex.com/api/v1.1/'
+
+
+    # -------------------------------------------------------- Public methods ------------------------------------------------------- #
+    # ------------------------------------------------------------ Public ----------------------------------------------------------- #
 
     # [
     #     {
@@ -37,7 +47,7 @@ class BittrexV1:
     #     }
     # ]
     def get_markets(self) -> Optional[List]:
-        return self.requestUtils.get_resp(_EndPoints.GET_MARKETS)
+        return self.__request(EndPoints.GET_MARKETS)
 
 
     # [
@@ -53,8 +63,8 @@ class BittrexV1:
     #     }
     # ]
     def get_currencies(self) -> Optional[List]:
-        return self.requestUtils.get_resp(_EndPoints.GET_CURRENCIES)
-    
+        return self.__request(EndPoints.GET_CURRENCIES)
+
 
     # [
     #     {
@@ -75,8 +85,8 @@ class BittrexV1:
     #     }
     # ]
     def get_market_summaries(self) -> Optional[List]:
-        return self.requestUtils.get_resp(_EndPoints.GET_MARKET_SUMMARIES)
-    
+        return self.__request(EndPoints.GET_MARKET_SUMMARIES)
+
 
     # {
     #     "MarketName": "BTC-LTC",
@@ -95,15 +105,19 @@ class BittrexV1:
     #     "DisplayMarketName": "string"
     # }
     def get_market_summary(self, market: str) -> Optional[Dict]:
-        summary_arr = self.requestUtils.get_resp(_EndPoints.GET_MARKET_SUMMARY, params = {
-            _KEYS.MARKET:market
-        })
+        return self.__request(
+            EndPoints.GET_MARKET_SUMMARY,
+            params={
+                Keys.MARKET:market
+            },
+            path=['result', 0]
+        )
 
-        if summary_arr is not None and len(summary_arr) > 0:
-            return summary_arr[0]
+        # if summary_arr is not None and len(summary_arr) > 0:
+        #     return summary_arr[0]
         
-        return None
-    
+        # return None
+
 
     # {
     #     "Bid": 2.05670368,
@@ -111,10 +125,13 @@ class BittrexV1:
     #     "Last": 3.35579531
     # }
     def get_ticker(self, market: str) -> Optional[Dict]:
-        return self.requestUtils.get_resp(_EndPoints.GET_TICKER, params = {
-            _KEYS.MARKET:market
-        })
-    
+        return self.__request(
+            EndPoints.GET_TICKER,
+            params={
+                Keys.MARKET:market
+            }
+        )
+
 
     # {
     #     "buy": [
@@ -130,14 +147,19 @@ class BittrexV1:
     #         }
     #     ]
     # }
-    # 
-    # type can be 'buy', 'sell', or 'both'
-    def get_order_book(self, market: str, type: str = 'both') -> Optional[Dict]: # or Optional[List] if type != 'both'
-        return self.requestUtils.get_resp(_EndPoints.GET_ORDER_BOOK, params = {
-            _KEYS.MARKET:market,
-            _KEYS.TYPE:type
-        })
-    
+    def get_order_book(
+        self,
+        market: str,
+        type: OrderBookType = OrderBookType.BOTH
+    ) -> Optional[Union[List, Dict]]: # or Optional[List] if type != OrderBookType.BOTH
+        return self.__request(
+            EndPoints.GET_ORDER_BOOK,
+            params={
+                Keys.MARKET:market,
+                Keys.TYPE:type
+            }
+        )
+
 
     # [
     #     {
@@ -151,31 +173,62 @@ class BittrexV1:
     #     }
     # ]
     def get_market_history(self, market: str) -> Optional[List]:
-        return self.requestUtils.get_resp(_EndPoints.GET_MARKET_HISTORY, params = {
-            _KEYS.MARKET:market
-        })
+        return self.__request(
+            EndPoints.GET_MARKET_HISTORY,
+            params={ Keys.MARKET:market }
+        )
 
 
-    ############################################################ MARKET ############################################################
+    # ------------------------------------------------------------ Market ----------------------------------------------------------- #
+
+    # "614c34e4-8d71-11e3-94b5-425861b86ab6"
+    def buy(
+        self,
+        market: str,
+        quantity: float,
+        rate: float
+    ) -> Optional[str]:
+        return self.__buy_sell(
+            EndPoints.BUY_LIMIT,
+            market,
+            quantity,
+            rate
+        )
+
+    # Alias
+    buy_limit = buy
 
 
     # "614c34e4-8d71-11e3-94b5-425861b86ab6"
-    def buy_limit(self, market: str, quantity: float, rate: float) -> Optional[str]:
-        return self.__buy_sell(_EndPoints.BUY_LIMIT, market, quantity, rate)
-    
+    def sell(
+        self,
+        market: str,
+        quantity: float,
+        rate: float
+    ) -> Optional[str]:
+        return self.__buy_sell(
+            EndPoints.SELL_LIMIT,
+            market,
+            quantity,
+            rate
+        )
 
-    # "614c34e4-8d71-11e3-94b5-425861b86ab6"
-    def sell_limit(self, market: str, quantity: float, rate: float) -> Optional[str]:
-        return self.__buy_sell(_EndPoints.SELL_LIMIT, market, quantity, rate)
-    
+    # Alias
+    sell_limit = sell
+
 
     # True or False or None
-    def cancel_order(self, uuid: str) -> Optional[bool]:
-        return self.requestUtils.get_resp(_EndPoints.CANCEL, params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.UUID:uuid
-        }, signature_key = self.secret_key)
-    
+    def cancel(self, uuid: str) -> Optional[bool]:
+        return self.__request(
+            EndPoints.CANCEL,
+            params={ Keys.UUID:uuid },
+            path=['success'],
+            signed=True
+        )
+
+    # Alias
+    cancel_order = cancel
+
 
     # [
     #     {
@@ -198,19 +251,20 @@ class BittrexV1:
     #         "ConditionTarget": null
     #     }
     # ]
-    def get_open_orders(self, market: str = None) -> Optional[List]:
-        params = {
-            _KEYS.API_KEY:self.api_key
-        }
+    def get_open_orders(self, market: Optional[str] = None) -> Optional[List]:
+        params = None
 
         if market is not None:
-            params[_KEYS.MARKET] = market
+            params = { Keys.MARKET:market }
 
-        return self.requestUtils.get_resp(_EndPoints.GET_OPEN_ORDERS, params, signature_key = self.secret_key)
+        return self.__request(
+            EndPoints.GET_OPEN_ORDERS,
+            params=params,
+            signed=True
+        )
 
 
-    ############################################################ ACCOUNT ############################################################
-
+    # ----------------------------------------------------------- Account ----------------------------------------------------------- #
 
     # [
     #     {
@@ -224,10 +278,11 @@ class BittrexV1:
     #     }
     # ]
     def get_balances(self) -> Optional[List]:
-        return self.requestUtils.get_resp(_EndPoints.GET_BALANCES, params = {
-            _KEYS.API_KEY:self.api_key
-        }, signature_key = self.secret_key)
-    
+        return self.__request(
+            EndPoints.GET_BALANCES,
+            signed=True
+        )
+
 
     # {
     #     "Currency": "DOGE",
@@ -239,41 +294,45 @@ class BittrexV1:
     #     "Uuid": null
     # }
     def get_balance(self, currency: str) -> Optional[Dict]:
-        return self.requestUtils.get_resp(_EndPoints.GET_BALANCE, params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.CURRENCY:currency
-        }, signature_key = self.secret_key)
-    
+        return self.__request(
+            EndPoints.GET_BALANCE,
+            params={ Keys.CURRENCY:currency },
+            signed=True
+        )
+
 
     # {
     #     "Currency": "VTC",
     #     "Address": "Vy5SKeKGXUHKS2WVpJ76HYuKAu3URastUo"
     # }
     def get_deposit_address(self, currency: str) -> Optional[Dict]:
-        return self.requestUtils.get_resp(_EndPoints.GET_DEPOSIT_ADDRESS, params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.CURRENCY:currency
-        }, signature_key = self.secret_key)
-    
+        return self.__request(
+            EndPoints.GET_DEPOSIT_ADDRESS,
+            params={ Keys.CURRENCY:currency },
+            signed=True
+        )
+
 
     # param address: the address where to send the funds
     # param paymentid: used for CryptoNotes/BitShareX/Nxt/XRP and any other coin that has a memo/message/tag/paymentid option
     # 
     # returns UUID: "614c34e4-8d71-11e3-94b5-425861b86ab6"
     def withdraw(self, currency: str, quantity: float, address: str, payment_id: Optional[str] = None) -> Optional[str]:
-        params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.CURRENCY:currency,
-            _KEYS.ADDRESS:address
+        params={
+            Keys.CURRENCY:currency,
+            Keys.ADDRESS:address
         }
 
         if payment_id is not None:
-            params[_KEYS.PAYMENT_ID] = payment_id
+            params[Keys.PAYMENT_ID] = payment_id
 
-        res = self.requestUtils.get_resp(_EndPoints.WITHDRAW, params = params, signature_key = self.secret_key)
+        return self.__request(
+            EndPoints.WITHDRAW,
+            params=params,
+            signed=True,
+            path=['result', 'uuid']
+        )
 
-        return self.__get_uuid(res)
-    
 
     # {
     #     "AccountId": null,
@@ -301,11 +360,12 @@ class BittrexV1:
     #     "ConditionTarget": null
     # }
     def get_order(self, uuid: str) -> Optional[Dict]:
-        return self.requestUtils.get_resp(_EndPoints.GET_ORDER, params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.UUID:uuid
-        }, signature_key = self.secret_key)
-    
+        return self.__request(
+            EndPoints.GET_ORDER,
+            params={ Keys.UUID:uuid },
+            signed=True
+        )
+
     
     # [
     #     {
@@ -327,14 +387,16 @@ class BittrexV1:
     #     }
     # ]
     def get_order_history(self, market: Optional[str] = None) -> Optional[List]:
-        params = {
-            _KEYS.API_KEY:self.api_key
-        }
+        params = None
 
         if market is not None:
-            params[_KEYS.MARKET] = market
+            params = { Keys.MARKET:market }
 
-        return self.requestUtils.get_resp(_EndPoints.GET_ORDER_HISTORY, params, signature_key = self.secret_key)
+        return self.__request(
+            EndPoints.GET_ORDER_HISTORY,
+            params=params,
+            signed=True
+        )
 
     
     # [
@@ -353,14 +415,16 @@ class BittrexV1:
     #     }
     # ]
     def get_withdrawal_history(self, currency: Optional[str] = None) -> Optional[List]:
-        params = {
-            _KEYS.API_KEY:self.api_key
-        }
+        params = None
 
         if currency is not None:
-            params[_KEYS.CURRENCY] = currency
+            params = { Keys.CURRENCY:currency }
 
-        return self.requestUtils.get_resp(_EndPoints.GET_WITHDRAWAL_HISTORY, params, signature_key = self.secret_key)
+        return self.__request(
+            EndPoints.GET_WITHDRAWAL_HISTORY,
+            params=params,
+            signed=True
+        )
 
     
     # [
@@ -375,73 +439,62 @@ class BittrexV1:
     #     }
     # ]
     def get_deposit_history(self, currency: Optional[str] = None) -> Optional[List]:
-        params = {
-            _KEYS.API_KEY:self.api_key
-        }
+        params = None
 
         if currency is not None:
-            params[_KEYS.CURRENCY] = currency
+            params = { Keys.CURRENCY:currency }
 
-        return self.requestUtils.get_resp(_EndPoints.GET_DEPOSIT_HISTORY, params, signature_key = self.secret_key)
+        return self.__request(
+            EndPoints.GET_DEPOSIT_HISTORY,
+            params=params,
+            signed=True
+        )
 
 
-    ############################################################ UTILS ############################################################
-    
+    # ------------------------------------------------------- Private methods ------------------------------------------------------- #
+
+    def __request(
+        self,
+        endpoint: EndPoints,
+        params: Optional[Dict] = None,
+        signed: bool = False,
+        path: Optional[List[str]] = None
+    ) -> Optional[JSONData]:
+        if signed:
+            if params is None:
+                params={}
+
+            params[Keys.API_KEY] = self.api_key
+
+        url = self.url_utils.url(endpoint.value, params)
+        headers = None
+
+        if signed:
+            headers = {Keys.SIGNATURE: crypto.signature(url, self.api_secret)}
+
+        return self.requests.request(
+            url,
+            RequestMethod.GET,
+            headers=headers,
+            needed_values={
+                'success': True,
+                'result': None
+            },
+            path=path or ['result']
+        )
+
     def __buy_sell(self, endpoint: str, market: str, quantity: float, rate: float) -> Optional[str]:
-        res = self.requestUtils.get_resp(endpoint, params = {
-            _KEYS.API_KEY:self.api_key,
-            _KEYS.MARKET:market,
-            _KEYS.QUANTITY:quantity,
-            _KEYS.RATE:rate
-        }, signature_key = self.secret_key)
-
-        return self.__get_uuid(res)
-    
-    def __get_uuid(self, resp) -> Optional[str]:
-        if resp is None:
-            return None
-        
-        if self.obj and resp.uuid is not None:
-            return resp.uuid
-        elif not self.obj and 'uuid' in resp:
-            return resp['uuid']
-        
-        return None
-
-class _EndPoints:
-    # PUBLIC
-    GET_MARKETS          = 'public/getmarkets'
-    GET_CURRENCIES       = 'public/getcurrencies'
-    GET_TICKER           = 'public/getticker'
-    GET_MARKET_SUMMARIES = 'public/getmarketsummaries'
-    GET_MARKET_SUMMARY   = 'public/getmarketsummary'
-    GET_ORDER_BOOK       = 'public/getorderbook'
-    GET_MARKET_HISTORY   = 'public/getmarkethistory'
-
-    # MARKET
-    BUY_LIMIT       = 'market/buylimit'
-    SELL_LIMIT      = 'market/selllimit'
-    CANCEL          = 'market/cancel'
-    GET_OPEN_ORDERS = 'market/getopenorders'
-
-    # ACCOUNT
-    GET_BALANCES           = 'account/getbalances'
-    GET_BALANCE            = 'account/getbalance'
-    GET_DEPOSIT_ADDRESS    = 'account/getdepositaddress'
-    WITHDRAW               = 'account/withdraw'
-    GET_ORDER              = 'account/getorder'
-    GET_ORDER_HISTORY      = 'account/getorderhistory'
-    GET_WITHDRAWAL_HISTORY = 'account/getwithdrawalhistory'
-    GET_DEPOSIT_HISTORY    = 'account/getdeposithistory'
+        return self.__request(
+            endpoint,
+            params={
+                Keys.API_KEY:self.api_key,
+                Keys.MARKET:market,
+                Keys.QUANTITY:quantity,
+                Keys.RATE:rate
+            },
+            signed=True,
+            path=['result', 'uuid']
+        )
 
 
-class _KEYS:
-    MARKET     = 'market'
-    TYPE       = 'type'
-    QUANTITY   = 'quantity'
-    RATE       = 'rate'
-    API_KEY    = 'apikey'
-    UUID       = 'uuid'
-    CURRENCY   = 'currency'
-    ADDRESS    = 'address'
-    PAYMENT_ID = 'paymentid'
+# ---------------------------------------------------------------------------------------------------------------------------------------- #
