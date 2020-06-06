@@ -8,4 +8,4 @@ from bittrex_api.bittrex import Bittrex
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
-bittrex = Bittrex(debug_level=3)
+bittrex = Bittrex('b5d1e297c9c84679ae716a470205b7f0', '9e13656d8d544cedb77156ac85f571e5', debug_level=3)
