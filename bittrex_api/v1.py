@@ -6,7 +6,7 @@ from typing import Optional, Dict, List, Union
 # Local
 from .__bittrex_core import BittrexCore
 from .utils.bittrex_requests import BittrexRequests, RequestMethod, JSONData
-from .models.v1.EndPoints import EndPoints
+from .models.v1.endpoints import EndPoints
 from .models.v1.keys import Keys
 from .models.v1 import order_book_type
 from .utils.urls import Urls
