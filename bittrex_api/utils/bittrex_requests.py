@@ -109,7 +109,7 @@ class BittrexRequests:
             if resp is None:
                 if self.debug_level >= 1:
                     print('Response is None')
-            elif resp.status_code != 200 or resp.status_code != 201:
+        elif resp.status_code not in [200, 201]:
                 if self.debug_level >= 1:
                     print(resp.status_code, resp.text)
 
