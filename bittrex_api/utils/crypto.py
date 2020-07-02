@@ -7,7 +7,6 @@ import hashlib
 
 
 
-
 # ------------------------------------------------------------ Public methods ----------------------------------------------------------- #
 
 def signature(message: str, salt: str) -> str:
@@ -18,8 +17,7 @@ def signature(message: str, salt: str) -> str:
 def sha512(message: str) -> str:
     return hashlib.sha512(message.encode()).hexdigest()
 
-@property
 def nonce() -> int:
     import time
 
-    int(time.time() * 1000)
+    return int(time.time() * 1000)

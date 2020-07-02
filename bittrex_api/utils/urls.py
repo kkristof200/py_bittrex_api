@@ -52,7 +52,7 @@ class Urls:
 
             from . import crypto
 
-            params['nonce'] = crypto.nonce
+            params['nonce'] = crypto.nonce()
 
         if params is None:
             return url
