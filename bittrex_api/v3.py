@@ -1567,7 +1567,8 @@ class BittrexV3(BittrexCore):
         from .utils import crypto
 
         nonce = str(crypto.nonce)
-        url = self.url_utils.url(endpoint_args, params=params, use_nonce=False)
+        url = self.url_utils.url(*endpoint_args, params=params, use_nonce=False)
+        headers = {'Content-Type': 'application/json'}
 
         if signed:
             content = ''

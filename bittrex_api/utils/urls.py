@@ -32,8 +32,8 @@ class Urls:
 
         for arg in args:
             if arg is not None:
-                comps.append(strings.to_string(arg).strip('/'))
-
+                comps.append(strings.to_string(arg).strip('/'))      
+  
         return '/'.join(comps)
 
 
@@ -44,8 +44,7 @@ class Urls:
         use_nonce: bool = True
     ) -> str:
         endpoints_args = (self.base_url,) + endpoints_args
-
-        url = self.join(endpoints_args)
+        url = self.join(*endpoints_args)
 
         if use_nonce and (params is None or 'nonce' not in params):
             if params is None:

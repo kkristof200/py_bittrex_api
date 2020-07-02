@@ -5,7 +5,10 @@ import json
 
 # Local
 from bittrex_api.bittrex import Bittrex
+from bittrex_api.v3 import BittrexV3
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
-bittrex = Bittrex('b5d1e297c9c84679ae716a470205b7f0', '9e13656d8d544cedb77156ac85f571e5', debug_level=3)
+bittrex = BittrexV3(debug_level=3)
+
+print(bittrex.ping())
