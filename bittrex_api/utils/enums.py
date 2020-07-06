@@ -11,7 +11,6 @@ from . import strings
 
 
 
-
 # ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
 
 def enum_free_dict(d: Dict, remove_none_values: bool = True) -> Dict:

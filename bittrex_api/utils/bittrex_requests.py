@@ -70,7 +70,7 @@ class BittrexRequests:
                     method,
                     params=params,
                     headers=headers,
-                    data=data
+                    json_data=data
                 ),
                 needed_values=needed_values,
                 unwanted_values=unwanted_values,
@@ -93,7 +93,7 @@ class BittrexRequests:
         method: RequestMethod,
         params: Optional[Dict] = None,
         headers: Optional[Dict] = None,
-        data: Optional[Dict] = None
+        json_data: Optional[Dict] = None
     ) -> Optional[JSONData]:
         if self.debug_level >= 3:
             print(url)
@@ -102,9 +102,9 @@ class BittrexRequests:
             if method == RequestMethod.GET:
                 resp = requests.get(url, params=params, headers=headers)
             elif method == RequestMethod.POST:
-                resp = requests.post(url, data=data, params=params, headers=headers)
+                resp = requests.post(url, json=json_data, params=params, headers=headers)
             else:#elif method == RequestMethod.DELETE:
-                resp = requests.post(url, data=data, params=params, headers=headers)
+                resp = requests.post(url, json=json_data, params=params, headers=headers)
 
             if resp is None:
                 if self.debug_level >= 1:

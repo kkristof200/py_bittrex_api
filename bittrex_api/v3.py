@@ -1574,7 +1574,7 @@ class BittrexV3(BittrexCore):
             content = ''
 
             if body is not None:
-                body = enums.enum_free_dict(body)
+                body = enums.enum_free_dict(body, remove_none_values=True)
 
                 import json
 
@@ -1593,7 +1593,7 @@ class BittrexV3(BittrexCore):
                 'Api-Content-Hash': content_hash,
                 'Api-Signature': signature
             }
-
+        
         return self.requests.request(
             url,
             method,
