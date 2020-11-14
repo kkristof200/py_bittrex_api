@@ -28,10 +28,30 @@ WithdrawalStatus        = withdrawal_status.WithdrawalStatus
 
 class BittrexV3(BittrexCore):
 
+    # ------------------------------------------------------------- Init ------------------------------------------------------------- #
+
+    def __init__(
+        self,
+        api_key: str = '',
+        api_secret: str = '',
+        max_request_try_count: int = 3,
+        sleep_time: float = 7.5,
+        debug_level: int = 1,
+        reverse_market_names: bool = True,
+    ):
+        super().__init__(
+            api_key=api_key,
+            api_secret=api_secret,
+            max_request_try_count=max_request_try_count,
+            sleep_time=sleep_time,
+            debug_level=debug_level
+        )
+
+        self.REVERSE_MARKET_NAMES = reverse_market_names
+
     # ------------------------------------------------------ Private properties ------------------------------------------------------ #
 
     _base_url = 'https://api.bittrex.com/v3/'
-    REVERSE_MARKET_NAMES = True
 
 
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
