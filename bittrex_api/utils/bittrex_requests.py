@@ -30,20 +30,27 @@ class RequestMethod(Enum):
 # -------------------------------------------------------- class: BittrexRequests ------------------------------------------------------- #
 
 class BittrexRequests:
+    __USAGE_INTERVAL         = 60
+    __MAX_USAGE_PER_INTERVAL = 20
 
     # ------------------------------------------------------------- Init ------------------------------------------------------------ #
 
     def __init__(
         self,
-        # base_url: str,
         max_request_try_count: int = 3,
         sleep_time: float = 7.5,
-        debug_level: int = 1
+        debug_level: int = 1,
+        proxy: Optional[Union[List, str]] = None
     ):
-        # self.base_url = base_url.strip('/')
         self.max_try_count = max_request_try_count
         self.sleep_time = max_request_try_count
         self.debug_level = debug_level
+
+        if type(proxy) == str:
+            proxy = [proxy]
+
+        self.proxies = proxy
+        self.proxy_history = {}
 
 
     # -------------------------------------------------------- Public methods ------------------------------------------------------- #
@@ -87,6 +94,29 @@ class BittrexRequests:
 
     # ------------------------------------------------------- Private methods ------------------------------------------------------- #
 
+    def __get_proxy(self) -> Optional[str]:
+        if not self.proxies:
+            return None
+
+        self.__normalize_proxy_history()
+
+        for proxy in self.proxies:
+            self.proxy_history[proxy] = self.proxy_history[proxy] if proxy in self.proxy_history else []
+
+            if len(self.proxy_history[proxy]) < self.__MAX_USAGE_PER_INTERVAL:
+                return proxy
+
+        return None
+
+    def __normalize_proxy_history(self) -> None:
+        now = int(time.time())
+
+        for proxy in list(self.proxy_history.keys()):
+            if len(self.proxy_history[proxy]) < self.__MAX_USAGE_PER_INTERVAL:
+                continue
+
+            self.proxy_history[proxy] = [ts for ts in self.proxy_history[proxy] if now - ts < self.__USAGE_INTERVAL]
+
     def __request(
         self,
         url: str,
@@ -99,12 +129,18 @@ class BittrexRequests:
             print(url)
 
         try:
+            proxy = self.__get_proxy()
+
+            if proxy:
+                self.proxy_history[proxy] = self.proxy_history[proxy] if proxy in self.proxy_history else []
+                self.proxy_history[proxy].append(int(time.time()))
+
             if method == RequestMethod.GET:
-                resp = requests.get(url, params=params, headers=headers)
+                resp = requests.get(url, params=params, headers=headers, proxy=proxy)
             elif method == RequestMethod.POST:
-                resp = requests.post(url, json=json_data, params=params, headers=headers)
+                resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
             else:#elif method == RequestMethod.DELETE:
-                resp = requests.post(url, json=json_data, params=params, headers=headers)
+                resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
 
             if resp is None:
                 if self.debug_level >= 1:

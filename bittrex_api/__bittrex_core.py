@@ -2,6 +2,7 @@
 
 # System
 from abc import ABCMeta, abstractmethod
+from typing import Optional, Union, List
 
 # Local
 from .utils.bittrex_requests import BittrexRequests
@@ -14,7 +15,7 @@ from .utils.urls import Urls
 
 # ---------------------------------------------------------- class: BittrexCore ---------------------------------------------------------- #
 
-class BittrexCore:#(ABCMeta):
+class BittrexCore:
 
     # ------------------------------------------------------------- Init ------------------------------------------------------------- #
 
@@ -24,7 +25,8 @@ class BittrexCore:#(ABCMeta):
         api_secret: str = '',
         max_request_try_count: int = 3,
         sleep_time: float = 7.5,
-        debug_level: int = 1
+        debug_level: int = 1,
+        proxy: Optional[Union[List, str]] = None
     ):
         self.url_utils = Urls(
             base_url=self._base_url
@@ -32,7 +34,8 @@ class BittrexCore:#(ABCMeta):
         self.requests = BittrexRequests(
             max_request_try_count=max_request_try_count,
             sleep_time=sleep_time,
-            debug_level=debug_level
+            debug_level=debug_level,
+            proxy=proxy
         )
         self.api_key = api_key
         self.api_secret = api_secret

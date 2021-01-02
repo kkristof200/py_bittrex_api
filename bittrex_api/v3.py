@@ -1,7 +1,7 @@
 # --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
 
 # System
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 
 # Local
 from .__bittrex_core import BittrexCore
@@ -38,13 +38,15 @@ class BittrexV3(BittrexCore):
         sleep_time: float = 7.5,
         debug_level: int = 1,
         reverse_market_names: bool = True,
+        proxy: Optional[Union[List, str]] = None
     ):
         super().__init__(
             api_key=api_key,
             api_secret=api_secret,
             max_request_try_count=max_request_try_count,
             sleep_time=sleep_time,
-            debug_level=debug_level
+            debug_level=debug_level,
+            proxy=proxy
         )
 
         self.REVERSE_MARKET_NAMES = reverse_market_names
