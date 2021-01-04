@@ -140,7 +140,7 @@ class BittrexRequests:
             elif method == RequestMethod.POST:
                 resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
             else:#elif method == RequestMethod.DELETE:
-                resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
+                resp = requests.delete(url, json=json_data, params=params, headers=headers, proxy=proxy)
 
             if resp is None:
                 if self.debug_level >= 1:

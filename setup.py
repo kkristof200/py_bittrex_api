@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="bittrex_api",
-    version="0.0.11",
+    version="0.0.12",
     author="Kristof",
     description="bittrex_api",
     long_description=long_description,
