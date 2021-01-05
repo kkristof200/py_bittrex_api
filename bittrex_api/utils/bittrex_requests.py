@@ -104,7 +104,7 @@ class BittrexRequests:
             self.proxy_history[proxy] = self.proxy_history[proxy] if proxy in self.proxy_history else []
 
             if len(self.proxy_history[proxy]) < self.__MAX_USAGE_PER_INTERVAL:
-                return proxy
+                return proxy.lstrip('https://').lstrip('http://').lstrip('ftp://')
 
         return None
 
@@ -130,13 +130,18 @@ class BittrexRequests:
 
         try:
             proxy = self.__get_proxy()
+            proxies = {
+                'http':  'http://{}'.format(proxy),
+                'https': 'https://{}'.format(proxy),
+                'ftp':   'ftp://{}'.format(proxy)
+            } if proxy else None
 
             if proxy:
                 self.proxy_history[proxy] = self.proxy_history[proxy] if proxy in self.proxy_history else []
                 self.proxy_history[proxy].append(int(time.time()))
 
             if method == RequestMethod.GET:
-                resp = requests.get(url, params=params, headers=headers, proxy=proxy)
+                resp = requests.get(url, params=params, headers=headers, proxies=proxies)
             elif method == RequestMethod.POST:
                 resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
             else:#elif method == RequestMethod.DELETE:
