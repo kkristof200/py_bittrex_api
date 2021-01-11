@@ -4,6 +4,7 @@
 from enum import Enum
 import time, hashlib, requests, hmac, os, json, copy
 from typing import Optional, Dict, List, Union, Any, Tuple
+from .strings import to_string
 
 # --------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -128,6 +129,9 @@ class BittrexRequests:
         if self.debug_level >= 3:
             print(url)
 
+        if params:
+            params = {to_string(k):to_string(v) for k, v in params.items() if v}
+
         try:
             proxy = self.__get_proxy()
             proxies = {
@@ -143,9 +147,9 @@ class BittrexRequests:
             if method == RequestMethod.GET:
                 resp = requests.get(url, params=params, headers=headers, proxies=proxies)
             elif method == RequestMethod.POST:
-                resp = requests.post(url, json=json_data, params=params, headers=headers, proxies=proxy)
+                resp = requests.post(url, json=json_data, params=params, headers=headers, proxies=proxies)
             else:#elif method == RequestMethod.DELETE:
-                resp = requests.delete(url, json=json_data, params=params, headers=headers, proxies=proxy)
+                resp = requests.delete(url, json=json_data, params=params, headers=headers, proxies=proxies)
 
             if resp is None:
                 if self.debug_level >= 1:

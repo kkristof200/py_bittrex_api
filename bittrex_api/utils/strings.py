@@ -16,7 +16,7 @@ def to_string(value: Any) -> Optional[str]:
 
     from enum import Enum
 
-    if issubclass(type(value), Enum):
+    if isinstance(value, Enum):
         value = value.value
 
     return str(value)

@@ -21,6 +21,9 @@ from bittrex_api.v3 import *
 # )))
 
 
-bittrex = BittrexV3(debug_level=3, proxy=None)
+bittrex = BittrexV3(reverse_market_names=False, debug_level=3)
 
-print(bittrex.get_orderbook(market='BTC-USDT', depth=1))
+from kcu import kjson
+
+kjson.save('test.json', bittrex.get_candles(market='BTC-USDT'))
+# print(bittrex.get_orderbook(market='BTC-USDT', depth=1))

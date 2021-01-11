@@ -1,7 +1,7 @@
 # --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
 
 # System
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Tuple
 
 # Local
 from .__bittrex_core import BittrexCore
@@ -325,7 +325,7 @@ class BittrexV3(BittrexCore):
             EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.ORDER_BOOK,
             method=RequestMethod.GET,
             params={
-                Keys.DEPTH.value:depth
+                Keys.DEPTH:depth
             }
         )
 
@@ -366,33 +366,32 @@ class BittrexV3(BittrexCore):
     #         "low": "number (double)",
     #         "close": "number (double)",
     #         "volume": "number (double)",
-    #         "baseVolume": "number (double)",
     #         "quoteVolume": "number (double)"
     #     }
     # ]
     def get_candles(
         self,
         market: str,
-        candle_interval: Optional[CandleInterval] = None
+        candle_interval: Optional[CandleInterval] = CandleInterval.MINUTE_1,
+        date: Optional[Tuple[int, Optional[int], Optional[int]]] = None
     ) -> Optional[List[Dict]]:
-        """Retrieve recent candles for a specific market. The maximum age of the returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days). Candles for intervals without any trading activity are omitted. ** Note: baseVolume is being deprecated and will be removed in favor of quoteVolume
+        """Retrieve recent candles for a specific market. The maximum age of the returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days).
+        Candles for intervals without any trading activity are omitted.
 
         Arguments:
             market {str} -- symbol of market to retrieve candles for
 
         Keyword Arguments:
-            candle_interval {Optional[CandleInterval]} -- desired time interval between candles (default: {None})
+            candle_interval {Optional[CandleInterval]} -- desired time interval between candles (default: {CandleInterval.MINUTE_1})
+            date {Optional[Tuple[int, Optional[int], Optional[int]]]} -- Date for the candles to check [year, month, day] (default: {None})
 
         Returns:
             Optional[List[Dict]] -- List of candles
         """
 
         return self.__request(
-            EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.CANDLES,
-            method=RequestMethod.GET,
-            params={
-                Keys.CANDLE_INTERVAL:candle_interval
-            }
+            EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.CANDLES, candle_interval or CandleInterval.MINUTE_1, '{}/{}/{}/{}'.format(EndPoints.HISTORICAL, date[0], date[1] or '', date[2] or '').strip('/') if date else EndPoints.RECENT,
+            method=RequestMethod.GET
         )
 
     # Response:
@@ -404,7 +403,6 @@ class BittrexV3(BittrexCore):
     #         "low": "number (double)",
     #         "close": "number (double)",
     #         "volume": "number (double)",
-    #         "baseVolume": "number (double)",
     #         "quoteVolume": "number (double)"
     #     }
     # ]
@@ -413,7 +411,7 @@ class BittrexV3(BittrexCore):
         market: str,
         candle_interval: CandleInterval
     ) -> Optional[List[Dict]]:
-        """Retrieve recent candles for a specific market and candle interval. The maximum age of the returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days). Candles for intervals without any trading activity are omitted. ** Note: baseVolume is being deprecated and will be removed in favor of quoteVolume
+        """Retrieve recent candles for a specific market and candle interval. The maximum age of the returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days). Candles for intervals without any trading activity are omitted.
 
         Arguments:
             market {str} -- symbol of market to retrieve candles for
@@ -438,7 +436,6 @@ class BittrexV3(BittrexCore):
     #         "low": "number (double)",
     #         "close": "number (double)",
     #         "volume": "number (double)",
-    #         "baseVolume": "number (double)",
     #         "quoteVolume": "number (double)"
     #     }
     # ]
@@ -447,10 +444,10 @@ class BittrexV3(BittrexCore):
         market: str,
         candle_interval: CandleInterval,
         year: int,
-        month: Optional[int],
-        day: Optional[int],
+        month: Optional[int] = None,
+        day: Optional[int] = None,
     ) -> Optional[List[Dict]]:
-        """Retrieve recent candles for a specific market and candle interval. The date range of returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days). Candles for intervals without any trading activity are omitted. ** Note: baseVolume is being deprecated and will be removed in favor of quoteVolume
+        """Retrieve recent candles for a specific market and candle interval. The date range of returned candles depends on the interval as follows: (MINUTE_1: 1 day, MINUTE_5: 1 day, HOUR_1: 31 days, DAY_1: 366 days). Candles for intervals without any trading activity are omitted.
 
         Arguments:
             market {str} -- symbol of market to retrieve candles for
@@ -459,9 +456,9 @@ class BittrexV3(BittrexCore):
 
             year {int} -- desired year to start from
 
-            month {int} -- desired month to start from (if applicable)
+            month {Optional[int]} -- desired month to start from (if applicable)
 
-            day {int} -- desired day to start from (if applicable)
+            day {Optional[int]} -- desired day to start from (if applicable)
 
         Returns:
             Optional[List[Dict]] -- List of candles

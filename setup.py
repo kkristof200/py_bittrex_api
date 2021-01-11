@@ -5,14 +5,14 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="bittrex_api",
-    version="0.0.15",
+    version="0.0.16",
     author="Kristof",
     description="bittrex_api",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/kkristof200/py_bittrex_api",
     packages=setuptools.find_packages(),
-    install_requires=["requests"],
+    install_requires=["kcu", "requests"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
