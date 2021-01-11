@@ -12,7 +12,7 @@ from bittrex_api.v3 import *
 bittrex = BittrexV3('YOUR_API_KEY', 'YOUR_SECRET_KEY', debug_level=3, proxy=None)
 
 print(bittrex.post_order(bittrex.create_new_order_dict(
-    market='SC-BTC',
+    market='BTC-SC',
     direction=OrderDirection.SELL,
     type=OrderType.LIMIT,
     time_in_force=TimeInForce.GOOD_TIL_CANCELLED,

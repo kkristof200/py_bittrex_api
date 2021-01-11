@@ -143,9 +143,9 @@ class BittrexRequests:
             if method == RequestMethod.GET:
                 resp = requests.get(url, params=params, headers=headers, proxies=proxies)
             elif method == RequestMethod.POST:
-                resp = requests.post(url, json=json_data, params=params, headers=headers, proxy=proxy)
+                resp = requests.post(url, json=json_data, params=params, headers=headers, proxies=proxy)
             else:#elif method == RequestMethod.DELETE:
-                resp = requests.delete(url, json=json_data, params=params, headers=headers, proxy=proxy)
+                resp = requests.delete(url, json=json_data, params=params, headers=headers, proxies=proxy)
 
             if resp is None:
                 if self.debug_level >= 1:

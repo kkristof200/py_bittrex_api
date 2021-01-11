@@ -37,7 +37,7 @@ class BittrexV3(BittrexCore):
         max_request_try_count: int = 3,
         sleep_time: float = 7.5,
         debug_level: int = 1,
-        reverse_market_names: bool = True,
+        reverse_market_names: bool = False,
         proxy: Optional[Union[List, str]] = None
     ):
         super().__init__(
@@ -325,7 +325,7 @@ class BittrexV3(BittrexCore):
             EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.ORDER_BOOK,
             method=RequestMethod.GET,
             params={
-                Keys.DEPTH:depth
+                Keys.DEPTH.value:depth
             }
         )
 
