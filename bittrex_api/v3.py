@@ -37,7 +37,7 @@ class BittrexV3(BittrexCore):
         max_request_try_count: int = 3,
         sleep_time: float = 7.5,
         debug_level: int = 1,
-        reverse_market_names: bool = False,
+        reverse_market_names: bool = True,
         proxy: Optional[Union[List, str]] = None
     ):
         super().__init__(
@@ -1025,7 +1025,7 @@ class BittrexV3(BittrexCore):
             EndPoints.ORDERS, EndPoints.OPEN,
             method=RequestMethod.GET,
             params={
-                Keys.MARKET_SYMBOL:market
+                Keys.MARKET_SYMBOL:self.__optionally_reversed_market_name(market)
             },
             signed=True
         )
@@ -1087,7 +1087,7 @@ class BittrexV3(BittrexCore):
             EndPoints.ORDERS, EndPoints.CLOSED,
             method=RequestMethod.GET,
             params={
-                Keys.MARKET_SYMBOL:market,
+                Keys.MARKET_SYMBOL:self.__optionally_reversed_market_name(market),
                 Keys.NEXT_PAGE_TOKEN:next_page_token,
                 Keys.PREVIOUS_PAGE_TOKEN:previous_page_token,
                 Keys.PAGE_SIZE:page_size,
@@ -1592,7 +1592,7 @@ class BittrexV3(BittrexCore):
         if signed:
             content = ''
 
-            if body is not None:
+            if body:
                 body = enums.enum_free_dict(body, remove_none_values=True)
 
                 import json
@@ -1612,11 +1612,11 @@ class BittrexV3(BittrexCore):
                 'Api-Content-Hash': content_hash,
                 'Api-Signature': signature
             }
-        
+
         return self.requests.request(
             url,
             method,
-            params=params,
+            params=None,
             headers=headers,
             data=body,
             needed_values=needed_values,
