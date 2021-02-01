@@ -31,8 +31,8 @@ class Urls:
 
         for arg in args:
             if arg is not None:
-                comps.append(strings.to_string(arg).strip('/'))      
-  
+                comps.append(strings.to_string(arg).strip('/'))
+
         return '/'.join(comps)
 
 

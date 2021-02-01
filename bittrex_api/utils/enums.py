@@ -30,5 +30,5 @@ def enum_free_dict(d: Dict, remove_none_values: bool = True) -> Dict:
 def optionally_get_enum_value(value: Any) -> Any:
     if issubclass(type(value), Enum):
         return value.value
-    
+
     return value

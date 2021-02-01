@@ -87,9 +87,9 @@ class BittrexRequests:
 
             if j is not None:
                 return j
-            
+
             time.sleep(self.sleep_time)
-        
+
         return None
 
 
@@ -166,7 +166,7 @@ class BittrexRequests:
                 print(e)
 
             return None
-    
+
     def __sub_json(
         self,
         j: Optional[JSONData],
@@ -176,7 +176,7 @@ class BittrexRequests:
     ) -> Optional[JSONData]:
         if j is None:
             return None
-        
+
         if needed_values is not None:
             for k, v in needed_values.items():
                 if k not in j:
@@ -205,7 +205,7 @@ class BittrexRequests:
                         print(json.dumps(j, indent=4))
 
                     return None
-        
+
         if unwanted_values is not None:
             for value in unwanted_values:
                 if value in j:
@@ -216,7 +216,7 @@ class BittrexRequests:
                         print(json.dumps(j, indent=4))
 
                     return None
-        
+
         if path is None:
             return j
 

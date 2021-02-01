@@ -501,7 +501,7 @@ class BittrexV3(BittrexCore):
 
         Returns:
             Optional[Dict] -- AccountVolume
-        """        
+        """
         return self.__request(
             EndPoints.ACCOUNT_VOLUME,
             method=RequestMethod.GET,
@@ -525,7 +525,7 @@ class BittrexV3(BittrexCore):
 
         Returns:
             Optional[List[Dict]] -- List of Addresses
-        """        
+        """
         return self.__request(
             EndPoints.ADDRESSES,
             method=RequestMethod.GET,
@@ -1180,7 +1180,7 @@ class BittrexV3(BittrexCore):
             method=RequestMethod.DELETE,
             signed=True
         )
-    
+
     def post_order(
         self,
         order_dict: Dict
@@ -1467,7 +1467,7 @@ class BittrexV3(BittrexCore):
             market {str} -- unique symbol of the market this conditional order will be tracking
 
             order_to_create {Dict} -- (CHECK: 'create_new_order_dict') | order to create if this conditional order is triggered
-            
+
             order_to_cancel {Dict} -- (CHECK: 'create_new_cancel_order_dict') | order or conditional order to cancel if this conditional order triggers Note that this relationship is reciprocal.
 
         Keyword Arguments:
@@ -1537,7 +1537,7 @@ class BittrexV3(BittrexCore):
 
         Returns:
             Dict -- NewOrder
-        """    
+        """
         return {
             Keys.MARKET_SYMBOL:self.__optionally_reversed_market_name(market),
             Keys.DIRECTION:direction,
@@ -1555,7 +1555,7 @@ class BittrexV3(BittrexCore):
         type: CancelOrderType,
         uuid: str
     ) -> Dict:
-        """order or conditional order to cancel 
+        """order or conditional order to cancel
 
         Arguments:
             type {CancelOrderType} -- type of order to cancel

@@ -115,7 +115,7 @@ class BittrexV1(BittrexCore):
 
         # if summary_arr is not None and len(summary_arr) > 0:
         #     return summary_arr[0]
-        
+
         # return None
 
 
@@ -315,7 +315,7 @@ class BittrexV1(BittrexCore):
 
     # param address: the address where to send the funds
     # param paymentid: used for CryptoNotes/BitShareX/Nxt/XRP and any other coin that has a memo/message/tag/paymentid option
-    # 
+    #
     # returns UUID: "614c34e4-8d71-11e3-94b5-425861b86ab6"
     def withdraw(self, currency: str, quantity: float, address: str, payment_id: Optional[str] = None) -> Optional[str]:
         params={
@@ -366,7 +366,7 @@ class BittrexV1(BittrexCore):
             signed=True
         )
 
-    
+
     # [
     #     {
     #         "OrderUuid": "fd97d393-e9b9-4dd1-9dbf-f288fc72a185",
@@ -398,7 +398,7 @@ class BittrexV1(BittrexCore):
             signed=True
         )
 
-    
+
     # [
     #     {
     #         "PaymentUuid": "b52c7a5c-90c6-4c6e-835c-e16df12708b1",
@@ -426,7 +426,7 @@ class BittrexV1(BittrexCore):
             signed=True
         )
 
-    
+
     # [
     #     {
     #         "Id": 1,
