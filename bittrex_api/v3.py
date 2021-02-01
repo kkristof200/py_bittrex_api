@@ -390,7 +390,7 @@ class BittrexV3(BittrexCore):
         """
 
         return self.__request(
-            EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.CANDLES, candle_interval or CandleInterval.MINUTE_1, '{}/{}/{}/{}'.format(EndPoints.HISTORICAL, date[0], date[1] or '', date[2] or '').strip('/') if date else EndPoints.RECENT,
+            EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.CANDLES, candle_interval or CandleInterval.MINUTE_1, '{}/{}/{}/{}'.format(EndPoints.HISTORICAL.value, date[0], date[1] or '', date[2] or '').strip('/') if date else EndPoints.RECENT,
             method=RequestMethod.GET
         )
 
