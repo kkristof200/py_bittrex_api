@@ -16,7 +16,7 @@
 
 ## Description
 
-IMDB scraper
+Python implementation of the V1, V2 and V3 Bittrex API. No affiliation to Bittrex.
 
 ## Install
 
