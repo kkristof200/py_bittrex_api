@@ -175,10 +175,11 @@ class BittrexV3(BittrexCore):
     #     "precision": "integer (int32)",
     #     "status": "string",
     #     "createdAt": "string (date-time)",
-    #     "notice": "string",
     #     "prohibitedIn": [
     #         "string"
-    #     ]
+    #     ],
+    #    "associatedTermsOfService": [],
+    #    "tags": []
     # }
     def get_market(self, market: str) -> Optional[Dict]:
         """Retrieve information for a specific market.
@@ -226,7 +227,6 @@ class BittrexV3(BittrexCore):
     #     "high": "number (double)",
     #     "low": "number (double)",
     #     "volume": "number (double)",
-    #     "baseVolume": "number (double)",
     #     "quoteVolume": "number (double)",
     #     "percentChange": "number (double)",
     #     "updatedAt": "string (date-time)"
@@ -242,7 +242,7 @@ class BittrexV3(BittrexCore):
         """
 
         return self.__request(
-            EndPoints.MARKETS, self.__optionally_reversed_market_name(market),
+            EndPoints.MARKETS, self.__optionally_reversed_market_name(market), EndPoints.SUMMARY,
             method=RequestMethod.GET
         )
 

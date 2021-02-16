@@ -25,4 +25,8 @@ from kcu import kjson
 
 # kjson.save('test1.json', bittrex.get_closed_orders())
 # kjson.save('test2.json', bittrex.get_closed_orders(market='BTC-XRP'))
-print(bittrex.get_orderbook(market='BTC-XRP', depth=1))
+# print(bittrex.get_orderbook(market='BTC-XRP', depth=1))
+
+from kcu import kjson
+kjson.print(bittrex.get_market(market='BTC-XRP'))
+kjson.print(bittrex.get_market_summary(market='BTC-XRP'))

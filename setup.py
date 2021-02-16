@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="bittrex_api",
-    version="0.0.19",
+    version="0.0.20",
     author="Kristof",
     description="bittrex_api",
     long_description=long_description,
@@ -13,8 +13,8 @@ setuptools.setup(
     url="https://github.com/kkristof200/py_bittrex_api",
     packages=setuptools.find_packages(),
     install_requires=[
-        'kcu',
-        'requests'
+        'kcu>=0.0.61',
+        'requests>=2.25.1'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
